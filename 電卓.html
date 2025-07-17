@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>履歴付き電卓（iPhone風）</title>
+  <style>
+    body {
+      background-color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: white;
+    }
+
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .calculator {
+      width: 300px;
+      background-color: #1c1c1c;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 0 10px #000;
+    }
+
+    .display {
+      background-color: black;
+      color: white;
+      font-size: 2.5em;
+      text-align: right;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      height: 60px;
+      overflow: hidden;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      font-size: 1.5em;
+      border: none;
+      border-radius: 50%;
+      padding: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .gray {
+      background-color: #a5a5a5;
+      color: black;
+    }
+
+    .orange {
+      background-color: #ff9500;
+      color: white;
+    }
+
+    .dark {
+      background-color: #333333;
+      color: white;
+    }
+
+    .zero {
+      grid-column: span 2;
+      border-radius: 40px;
+      text-align: left;
+      padding-left: 30px;
+    }
+
+    .history {
+      width: 200px;
+      background-color: #222;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 0.9em;
+      overflow-y: auto;
+      max-height: 400px;
+    }
+
+    .history h3 {
+      margin-top: 0;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+    }
+
+    .history-entry {
+      border-bottom: 1px solid #444;
+      padding: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="calculator">
+      <div id="display" class="display">0</div>
+      <div class="buttons">
+        <button class="gray" onclick="clearDisplay()">AC</button>
+        <button class="gray" onclick="toggleSign()">±</button>
+        <button class="gray" onclick="append('%')">%</button>
+        <button class="orange" onclick="append('/')">÷</button>
+
+        <button class="dark" onclick="append('7')">7</button>
+        <button class="dark" onclick="append('8')">8</button>
+        <button class="dark" onclick="append('9')">9</button>
+        <button class="orange" onclick="append('*')">×</button>
+
+        <button class="dark" onclick="append('4')">4</button>
+        <button class="dark" onclick="append('5')">5</button>
+        <button class="dark" onclick="append('6')">6</button>
+        <button class="orange" onclick="append('-')">−</button>
+
+        <button class="dark" onclick="append('1')">1</button>
+        <button class="dark" onclick="append('2')">2</button>
+        <button class="dark" onclick="append('3')">3</button>
+        <button class="orange" onclick="append('+')">＋</button>
+
+        <button class="dark zero" onclick="append('0')">0</button>
+        <button class="dark" onclick="append('.')">.</button>
+        <button class="orange" onclick="calculate()">＝</button>
+      </div>
+    </div>
+
+    <div class="history" id="history">
+      <h3>履歴</h3>
+      <!-- 計算履歴がここに表示されます -->
+    </div>
+  </div>
+
+  <script>
+    let display = document.getElementById("display");
+    let historyBox = document.getElementById("history");
+    let currentInput = "";
+
+    function append(value) {
+      if (display.innerText === "0" || display.innerText === "エラー") {
+        display.innerText = value;
+      } else {
+        display.innerText += value;
+      }
+    }
+
+    function clearDisplay() {
+      display.innerText = "0";
+    }
+
+    function toggleSign() {
+      let val = display.innerText;
+      if (val === "0" || val === "エラー") return;
+      if (val.startsWith("-")) {
+        display.innerText = val.slice(1);
+      } else {
+        display.innerText = "-" + val;
+      }
+    }
+
+    function calculate() {
+      try {
+        let result = eval(display.innerText.replace(/÷/g, '/').replace(/×/g, '*'));
+        let entry = `<div class="history-entry">${display.innerText} = ${result}</div>`;
+        historyBox.innerHTML += entry;
+        display.innerText = result;
+      } catch (e) {
+        display.innerText = "エラー";
+      }
+    }
+  </script>
+</body>
+</html>
